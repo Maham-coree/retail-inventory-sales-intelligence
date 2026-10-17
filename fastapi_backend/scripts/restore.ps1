@@ -19,7 +19,7 @@ if ($userInfo.Count -ne 2) { throw 'DATABASE_URL must include a username and pas
 
 $root = 'C:\Program Files\PostgreSQL'
 $bin = Get-ChildItem -LiteralPath $root -Directory -ErrorAction Stop |
-    Sort-Object { [version]$_.Name } -Descending |
+    Sort-Object { [version]($_.Name + '.0') } -Descending |
     ForEach-Object { Join-Path $_.FullName 'bin' } |
     Where-Object {
         (Test-Path (Join-Path $_ 'pg_restore.exe')) -and
@@ -27,6 +27,7 @@ $bin = Get-ChildItem -LiteralPath $root -Directory -ErrorAction Stop |
     } | Select-Object -First 1
 if (-not $bin) { throw "Could not locate pg_restore.exe under $root." }
 
+   Add-Type -AssemblyName System.Web
 $query = [System.Web.HttpUtility]::ParseQueryString($connectionUri.Query)
 $env:PGHOST = $connectionUri.Host
 $env:PGPORT = if ($connectionUri.IsDefaultPort) { '5432' } else { [string]$connectionUri.Port }
