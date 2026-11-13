@@ -18,7 +18,7 @@ from .logging_config import configure_logging
 from .routers import auth, chatbot, labs, operations, resources
 from .routers.resources import db_error
 
-configure_logging()
+configure_logging(settings.app_env)
 logger = logging.getLogger(__name__)
 app = FastAPI(
     title="Retail Inventory and Sales Intelligence API",
