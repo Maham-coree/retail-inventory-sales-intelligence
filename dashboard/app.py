@@ -25,7 +25,10 @@ st.set_page_config(
 # ----------------------------------------------------------------------
 # Database connection
 # ----------------------------------------------------------------------
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = st.secrets.get(
+    "DATABASE_URL",
+    os.getenv("DATABASE_URL", "")
+)
 if not DATABASE_URL:
     st.error("DATABASE_URL not found. Create a .env file and paste your Neon connection string.")
     st.stop()
