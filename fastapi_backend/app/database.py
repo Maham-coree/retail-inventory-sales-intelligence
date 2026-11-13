@@ -1,6 +1,6 @@
 """Database connection (SQLAlchemy engine, session, Base)."""
 
-from sqlalchemy import create_engine
+from sqlalchemy import Connection, create_engine, event
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 from .config import settings
@@ -11,6 +11,13 @@ if DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg://", 1)
 
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+
+
+@event.listens_for(engine, "begin")
+def set_search_path(connection: Connection) -> None:
+    connection.exec_driver_sql("SET LOCAL search_path TO retail, public")
+
+
 SessionLocal = sessionmaker(bind=engine, autoflush=False)
 
 

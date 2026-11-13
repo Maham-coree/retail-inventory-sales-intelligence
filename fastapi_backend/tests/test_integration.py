@@ -1,6 +1,7 @@
 """Local PostgreSQL integration coverage; skipped when the server is unreachable."""
 
 import uuid
+from collections.abc import Generator
 
 import pytest
 from sqlalchemy import text
@@ -22,6 +23,18 @@ def database_is_available() -> bool:
 def require_postgres() -> None:
     if not database_is_available():
         pytest.skip("Configured PostgreSQL database is unreachable")
+
+
+@pytest.fixture()
+def chatbot_message_cleanup() -> Generator[list[int]]:
+    message_ids: list[int] = []
+    yield message_ids
+    with SessionLocal.begin() as db:
+        for message_id in message_ids:
+            db.execute(
+                text("DELETE FROM retail.chat_messages WHERE message_id = :message_id"),
+                {"message_id": message_id},
+            )
 
 
 pytestmark = pytest.mark.integration
@@ -148,3 +161,115 @@ def test_sale_reduces_stock_and_insufficient_stock_is_rejected(client) -> None:
             {"qty": before, "store": stocked["store_id"], "product": stocked["product_id"]},
         )
         db.execute(text("DELETE FROM retail.sales WHERE sale_id=:id"), {"id": sale_id})
+
+
+def test_chatbot_requires_authentication_and_denies_cashier_sales_data(
+    client, chatbot_message_cleanup
+) -> None:
+    assert client.post("/chatbot/message", json={"message": "sales today"}).status_code == 401
+    cashier = token(client, "cashier", "Cashier@123")
+    response = client.post(
+        "/chatbot/message",
+        headers={"Authorization": f"Bearer {cashier}"},
+        json={"message": "sales today"},
+    )
+    assert response.status_code == 200
+    chatbot_message_cleanup.append(response.json()["message_id"])
+    assert response.json()["intent"] == "sales_summary"
+    assert "cannot" in response.json()["reply"].lower()
+
+
+def test_chatbot_manager_can_get_sales_summary(client, chatbot_message_cleanup) -> None:
+    manager = token(client, "manager", "Manager@123")
+    response = client.post(
+        "/chatbot/message",
+        headers={"Authorization": f"Bearer {manager}"},
+        json={"message": "sales today"},
+    )
+    assert response.status_code == 200
+    chatbot_message_cleanup.append(response.json()["message_id"])
+    assert response.json()["intent"] == "sales_summary"
+    assert response.json()["data"]["type"] == "table"
+    assert response.json()["data"]["rows"] is not None
+
+
+def test_chatbot_product_availability_matches_inventory(
+    client, chatbot_message_cleanup
+) -> None:
+    admin = token(client, "admin", "Admin@123")
+    headers = {"Authorization": f"Bearer {admin}"}
+    products = client.get("/products", headers=headers).json()
+    product = products[0]
+    inventory = client.get(
+        f"/inventory?product_id={product['product_id']}", headers=headers
+    ).json()
+    response = client.post(
+        "/chatbot/message",
+        headers=headers,
+        json={"message": f"stock of {product['product_name']}"},
+    )
+    assert response.status_code == 200
+    chatbot_message_cleanup.append(response.json()["message_id"])
+    rows = response.json()["data"]["rows"]
+    assert rows
+    expected = {row["store_name"]: row["quantity_on_hand"] for row in inventory}
+    actual = {row["store_name"]: row["quantity_on_hand"] for row in rows}
+    assert actual == expected
+
+
+def test_chatbot_history_and_feedback_are_user_owned(
+    client, chatbot_message_cleanup
+) -> None:
+    cashier = token(client, "cashier", "Cashier@123")
+    admin = token(client, "admin", "Admin@123")
+    cashier_headers = {"Authorization": f"Bearer {cashier}"}
+    admin_headers = {"Authorization": f"Bearer {admin}"}
+    cashier_message = client.post(
+        "/chatbot/message", headers=cashier_headers, json={"message": "hello"}
+    ).json()
+    chatbot_message_cleanup.append(cashier_message["message_id"])
+    admin_message = client.post(
+        "/chatbot/message", headers=admin_headers, json={"message": "hello"}
+    ).json()
+    chatbot_message_cleanup.append(admin_message["message_id"])
+    admin_history = client.get("/chatbot/history", headers=admin_headers)
+    assert admin_history.status_code == 200
+    assert cashier_message["message_id"] not in {
+        item["message_id"] for item in admin_history.json()["messages"]
+    }
+    assert client.post(
+        "/chatbot/feedback",
+        headers=admin_headers,
+        json={"message_id": cashier_message["message_id"], "helpful": True},
+    ).status_code == 404
+    assert client.post(
+        "/chatbot/feedback",
+        headers=cashier_headers,
+        json={"message_id": cashier_message["message_id"], "helpful": True},
+    ).status_code == 200
+
+
+def test_chatbot_context_resolves_follow_up_store(client, chatbot_message_cleanup) -> None:
+    manager = token(client, "manager", "Manager@123")
+    headers = {"Authorization": f"Bearer {manager}"}
+    first = client.post(
+        "/chatbot/message",
+        headers=headers,
+        json={"message": "stock of Fresh Milk"},
+    )
+    assert first.status_code == 200
+    chatbot_message_cleanup.append(first.json()["message_id"])
+    follow_up = client.post(
+        "/chatbot/message",
+        headers=headers,
+        json={
+            "message": "and in the second store?",
+            "context": first.json()["context"],
+        },
+    )
+    assert follow_up.status_code == 200
+    chatbot_message_cleanup.append(follow_up.json()["message_id"])
+    stores = client.get("/stores", headers=headers).json()
+    expected_store = sorted(stores, key=lambda row: row["store_id"])[1]["store_name"]
+    assert len(follow_up.json()["data"]["rows"]) == 1
+    assert follow_up.json()["data"]["rows"][0]["store_name"] == expected_store

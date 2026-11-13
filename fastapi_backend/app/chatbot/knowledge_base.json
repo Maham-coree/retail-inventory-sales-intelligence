@@ -1,0 +1,218 @@
+[
+  {
+    "id": "login",
+    "title": "Sign in",
+    "keywords": ["login", "sign in", "log in", "password", "account"],
+    "roles": ["admin", "manager", "cashier"],
+    "answer": "1. Open the Retail IMS login page.\n2. Enter your username and password.\n3. Select **Sign in**. Your role controls which pages appear in the sidebar.",
+    "follow_ups": ["What can my role do?", "What should I do after a login error?"]
+  },
+  {
+    "id": "login-errors",
+    "title": "Fix a login error",
+    "keywords": ["login error", "incorrect password", "cannot sign in", "401"],
+    "roles": ["admin", "manager", "cashier"],
+    "answer": "1. Check your username and password, then select **Sign in** again.\n2. If the session expired, sign in again.\n3. Ask an admin to check that your account is active or reset your password.",
+    "follow_ups": ["How does an admin reset a password?", "What does error 401 mean?"]
+  },
+  {
+    "id": "admin-password-reset",
+    "title": "Reset a user's password",
+    "keywords": ["reset password", "change user password", "admin password reset"],
+    "roles": ["admin"],
+    "answer": "1. Open **Users** in the sidebar.\n2. Find the account and select **Reset password**.\n3. Enter a new password and save it. Share it with the user through your approved secure channel.",
+    "follow_ups": ["How do I create a user?", "What can each role do?"]
+  },
+  {
+    "id": "find-products",
+    "title": "Find a product",
+    "keywords": ["find product", "search product", "product catalogue", "sku"],
+    "roles": ["admin", "manager", "cashier"],
+    "answer": "1. Open **Products** in the sidebar.\n2. Enter a SKU or product name in the search box.\n3. Select **Search** to filter the product catalogue.",
+    "follow_ups": ["How do I add a product?", "How do I check stock?"]
+  },
+  {
+    "id": "add-product",
+    "title": "Add a product",
+    "keywords": ["add product", "create product", "new product"],
+    "roles": ["admin", "manager"],
+    "answer": "1. Open **Products**.\n2. Select **Add product**.\n3. Enter its SKU, name, category, supplier, cost, price, reorder settings and optional barcode, then save. The selling price must not be below cost.",
+    "follow_ups": ["How do I edit a product?", "How do I add a category?"]
+  },
+  {
+    "id": "edit-delete-product",
+    "title": "Edit or delete a product",
+    "keywords": ["edit product", "update product", "delete product"],
+    "roles": ["admin", "manager"],
+    "answer": "1. Open **Products** and search by SKU or product name.\n2. Select **Edit** beside the product to update it.\n3. Only an admin sees **Delete**; related sales or inventory can prevent deletion.",
+    "follow_ups": ["How do I find a product?", "Why did a change fail?"]
+  },
+  {
+    "id": "add-category",
+    "title": "Add a category",
+    "keywords": ["add category", "create category"],
+    "roles": ["admin", "manager"],
+    "answer": "1. Open **Categories**.\n2. Select **Add record**.\n3. Enter a category name and optional description, then save.",
+    "follow_ups": ["How do I add a product?", "How do I add a supplier?"]
+  },
+  {
+    "id": "add-supplier",
+    "title": "Add a supplier",
+    "keywords": ["add supplier", "create supplier", "supplier details"],
+    "roles": ["admin", "manager"],
+    "answer": "1. Open **Suppliers**.\n2. Select **Add record**.\n3. Enter supplier details and lead time, then save. Link the supplier when creating or editing a product.",
+    "follow_ups": ["How do I create a purchase order?", "How do I add a product?"]
+  },
+  {
+    "id": "add-customer",
+    "title": "Add a customer",
+    "keywords": ["add customer", "create customer"],
+    "roles": ["admin", "manager", "cashier"],
+    "answer": "1. Open **Customers**.\n2. Select **Add record**.\n3. Enter the customer's name and any optional contact details, then save.",
+    "follow_ups": ["How do I record a sale?", "How do I view a receipt?"]
+  },
+  {
+    "id": "record-sale",
+    "title": "Record a sale",
+    "keywords": ["new sale", "record sale", "create sale", "point of sale"],
+    "roles": ["admin", "manager", "cashier"],
+    "answer": "1. Open **Sales & POS** and select **New sale**.\n2. Choose a store, optional customer and payment method.\n3. Find each product, enter a quantity, and select **Add item**.\n4. Review the total and select **Complete sale**.",
+    "follow_ups": ["Why was a sale rejected?", "How do I view a receipt?"]
+  },
+  {
+    "id": "sale-stock-error",
+    "title": "Fix a sale rejected for insufficient stock",
+    "keywords": ["sale rejected", "insufficient stock", "not enough stock", "sale failed"],
+    "roles": ["admin", "manager", "cashier"],
+    "answer": "1. Check the selected store and product quantities in **Inventory**.\n2. Reduce the sale quantity or ask a manager/admin to restock or adjust inventory.\n3. Try **Complete sale** again. The database prevents stock from going below zero.",
+    "follow_ups": ["How do I check stock?", "How do I adjust stock?"]
+  },
+  {
+    "id": "receipt",
+    "title": "Read a sale receipt",
+    "keywords": ["receipt", "invoice details", "sale receipt"],
+    "roles": ["admin", "manager", "cashier"],
+    "answer": "1. Open **Sales & POS**.\n2. Select **Receipt** beside a sale.\n3. Review the store, cashier, payment, item quantities and total. Use **Print receipt** if you need a paper copy.",
+    "follow_ups": ["How do I record a sale?", "How do I search products?"]
+  },
+  {
+    "id": "check-stock",
+    "title": "Check stock by store",
+    "keywords": ["check stock", "stock by store", "inventory quantity", "how much stock"],
+    "roles": ["admin", "manager", "cashier"],
+    "answer": "1. Open **Inventory**.\n2. Select a store or stock status if needed.\n3. Select **Filter** to see on-hand quantities and stock status by product.",
+    "follow_ups": ["What do stock statuses mean?", "How do I see the stock ledger?"]
+  },
+  {
+    "id": "adjust-stock",
+    "title": "Adjust stock",
+    "keywords": ["adjust stock", "change inventory", "stock adjustment"],
+    "roles": ["admin", "manager"],
+    "answer": "1. Open **Inventory** and select **Adjust stock**.\n2. Choose the store and product, enter a positive or negative change, and give a reason.\n3. Submit the adjustment. Negative stock is rejected and the change is recorded in **Stock Ledger**.",
+    "follow_ups": ["How do I check stock?", "What is the stock ledger?"]
+  },
+  {
+    "id": "stock-ledger",
+    "title": "Read the stock ledger",
+    "keywords": ["stock ledger", "stock movement", "movement history"],
+    "roles": ["admin", "manager"],
+    "answer": "1. Open **Stock Ledger**.\n2. Filter by product ID, store ID or movement type.\n3. Review the date, movement type, quantity change and reference. Sale quantities are negative; received stock is positive.",
+    "follow_ups": ["How do I adjust stock?", "How do I check stock?"]
+  },
+  {
+    "id": "stock-status",
+    "title": "Understand stock statuses",
+    "keywords": ["stock status", "critical", "out of stock", "reorder status"],
+    "roles": ["admin", "manager", "cashier"],
+    "answer": "1. **OK** means stock is above the reorder level.\n2. **REORDER** means stock is at or below the reorder level.\n3. **CRITICAL** means stock is at or below half the reorder level.\n4. **OUT OF STOCK** means on-hand quantity is zero.",
+    "follow_ups": ["How do I check stock?", "How do I create a purchase order?"]
+  },
+  {
+    "id": "reorder-level",
+    "title": "Understand the reorder level",
+    "keywords": ["reorder level", "reorder quantity", "when to reorder"],
+    "roles": ["admin", "manager", "cashier"],
+    "answer": "1. A product's reorder level is the on-hand quantity where it appears in **Reorder Alerts**.\n2. The product's reorder quantity is the suggested amount to order.\n3. Admins and managers can update these values in **Products** using **Edit**.",
+    "follow_ups": ["How do I create an order from reorder alerts?", "What do stock statuses mean?"]
+  },
+  {
+    "id": "create-purchase-order",
+    "title": "Create a purchase order",
+    "keywords": ["create purchase order", "new purchase order", "new po"],
+    "roles": ["admin", "manager"],
+    "answer": "1. Open **Purchase Orders** and select **New purchase order**.\n2. Choose a supplier and store, then select the product and quantity.\n3. Save the draft order. Use its status control to mark it ordered when sent to the supplier.",
+    "follow_ups": ["How do I receive an order?", "How do I order from reorder alerts?"]
+  },
+  {
+    "id": "orders-from-alerts",
+    "title": "Create orders from reorder alerts",
+    "keywords": ["create from reorder alerts", "order reorder alerts", "reorder purchase order"],
+    "roles": ["admin", "manager"],
+    "answer": "1. Open **Purchase Orders**.\n2. Select **Create from reorder alerts** to create draft orders grouped by supplier and store.\n3. Review each draft and update its status when the order is sent.",
+    "follow_ups": ["How do I receive an order?", "What does the reorder level mean?"]
+  },
+  {
+    "id": "receive-order",
+    "title": "Receive a purchase order",
+    "keywords": ["receive purchase order", "receive order", "goods received"],
+    "roles": ["admin", "manager"],
+    "answer": "1. Open **Purchase Orders** and find an order with status **Ordered**.\n2. Select **Receive**.\n3. The received quantities are added to stock and the order status changes to **Received**.",
+    "follow_ups": ["How do I check stock?", "How do I view the stock ledger?"]
+  },
+  {
+    "id": "dashboard",
+    "title": "Read the dashboard",
+    "keywords": ["dashboard", "business overview", "dashboard cards"],
+    "roles": ["admin", "manager", "cashier"],
+    "answer": "1. Open **Dashboard** to see total sales, invoices, stock value, items to reorder and out-of-stock counts.\n2. Review the charts for sales per day, top products, stock status and revenue per store.\n3. Use **Reorder Alerts** for the full restock list.",
+    "follow_ups": ["How do I read Reports & SQL?", "How do I check stock?"]
+  },
+  {
+    "id": "reports",
+    "title": "Use Reports & SQL",
+    "keywords": ["reports", "query plan", "explain", "sql report"],
+    "roles": ["admin", "manager"],
+    "answer": "1. Open **Reports & SQL** and choose a report.\n2. Review its relational algebra, SQL and results.\n3. Select **Show EXPLAIN** to view the database query plan.",
+    "follow_ups": ["How do I read the dashboard?", "What can my role do?"]
+  },
+  {
+    "id": "roles",
+    "title": "Understand role permissions",
+    "keywords": ["role permissions", "what can roles do", "cashier manager admin"],
+    "roles": ["admin", "manager", "cashier"],
+    "answer": "1. Cashiers can view products and stock, manage customers, and record sales.\n2. Managers can also manage business records, adjust inventory, manage purchase orders, and view reports.\n3. Admins have manager permissions plus user administration and the developer labs.",
+    "follow_ups": ["Why is a page missing?", "How does an admin reset a password?"]
+  },
+  {
+    "id": "missing-page",
+    "title": "A page or button is missing",
+    "keywords": ["page missing", "button missing", "not visible", "hidden page"],
+    "roles": ["admin", "manager", "cashier"],
+    "answer": "1. The sidebar and buttons depend on your account role.\n2. Cashiers do not see user administration, developer labs, reports, or inventory-management controls.\n3. Ask an admin to confirm your role if you believe access is incorrect.",
+    "follow_ups": ["What can each role do?", "How do I contact an admin?"]
+  },
+  {
+    "id": "error-codes",
+    "title": "Understand common error codes",
+    "keywords": ["401", "403", "404", "409", "422", "error code"],
+    "roles": ["admin", "manager", "cashier"],
+    "answer": "1. **401**: sign in again; your session may have expired.\n2. **403**: your role cannot perform that action.\n3. **404**: the requested record was not found.\n4. **409**: a conflict occurred, such as a duplicate SKU or insufficient stock.\n5. **422**: check the submitted values, such as a price below cost.",
+    "follow_ups": ["How do I fix a login error?", "Why was my sale rejected?"]
+  },
+  {
+    "id": "page-load-error",
+    "title": "A page does not load",
+    "keywords": ["page does not load", "page not loading", "network error", "api unavailable"],
+    "roles": ["admin", "manager", "cashier"],
+    "answer": "1. Refresh the page and check that you are signed in.\n2. If the error continues, check with your admin that the API and PostgreSQL are available.\n3. Share the page name and error code with the admin; never send passwords or tokens.",
+    "follow_ups": ["What do error codes mean?", "How do I fix a login error?"]
+  },
+  {
+    "id": "admin-backup-support",
+    "title": "Get admin help with backups or system settings",
+    "keywords": ["backup", "system settings", "contact admin", "user management"],
+    "roles": ["admin"],
+    "answer": "1. Use the approved deployment and backup procedures for this environment.\n2. Check **Users** for account administration.\n3. For database access, backups, or system configuration, contact the designated system administrator. Do not share credentials in chat.",
+    "follow_ups": ["How do I reset a user's password?", "How do I read Reports & SQL?"]
+  }
+]

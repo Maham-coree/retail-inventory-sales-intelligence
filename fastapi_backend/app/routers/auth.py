@@ -1,5 +1,5 @@
 """Login, current-user, and administrative user-management endpoints."""
-
+import time
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import text
@@ -16,9 +16,13 @@ router = APIRouter(tags=["authentication"])
 
 
 @router.post("/auth/login", summary="Create a bearer access token")
+
+@router.post("/auth/login", summary="Create a bearer access token")
 def login(
     form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ) -> dict[str, object]:
+    start = time.perf_counter()
+
     user = (
         db.execute(
             text(
@@ -30,18 +34,38 @@ def login(
         .mappings()
         .first()
     )
-    if (
-        user is None
-        or not user["is_active"]
-        or not verify_password(form.password, user["password_hash"])
-    ):
+
+    db_time = time.perf_counter()
+
+    if user is None or not user["is_active"]:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+    password_valid = verify_password(form.password, user["password_hash"])
+    bcrypt_time = time.perf_counter()
+
+    if not password_valid:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    token = create_access_token(user["username"], user["role"])
+    end = time.perf_counter()
+
+    print(
+        f"LOGIN TIMING | DB: {db_time - start:.3f}s | "
+        f"BCRYPT: {bcrypt_time - db_time:.3f}s | "
+        f"TOKEN: {end - bcrypt_time:.3f}s | "
+        f"TOTAL: {end - start:.3f}s"
+    )
+
     return {
-        "access_token": create_access_token(user["username"], user["role"]),
+        "access_token": token,
         "token_type": "bearer",
         "user": {
             "user_id": user["user_id"],
@@ -50,6 +74,7 @@ def login(
             "employee_id": user["employee_id"],
         },
     }
+
 
 
 @router.get("/auth/me", summary="Return the authenticated user")

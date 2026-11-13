@@ -1,4 +1,5 @@
 import { api, authStore } from "./api.js";
+import { mountChatbot, unmountChatbot } from "./chatbot.js";
 import { escapeHtml, toast, skeleton } from "./ui.js";
 import loginPage from "./pages/login.js";
 import dashboardPage from "./pages/dashboard.js";
@@ -42,6 +43,7 @@ const titles = Object.fromEntries(sections.flatMap(([, links]) => links.map(([id
 function renderShell() {
   const user = authStore.user;
   if (!user) {
+    unmountChatbot();
     document.querySelector("#app").innerHTML = '<main id="login-view"></main>';
     return;
   }
@@ -49,8 +51,9 @@ function renderShell() {
     const visible = links.filter(([, , roles]) => roles.split(" ").includes(user.role));
     return visible.length ? `<div class="nav-group">${heading}</div>${visible.map(([id, label]) => `<a class="nav-link" href="#${id}" data-route="${id}"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h6v6H4zM14 5h6v6h-6zM4 15h6v5H4zM14 15h6v5h-6z"/></svg>${escapeHtml(label)}</a>`).join("")}` : "";
   }).join("");
-  document.querySelector("#app").innerHTML = `<div class="app-shell"><aside class="sidebar" id="sidebar"><div class="brand">Retail Inventory<br>&amp; Sales Intelligence</div>${nav}<div class="nav-group">DEVELOPER</div><a class="nav-link" href="/docs" target="_blank" rel="noopener">API Documentation</a></aside><div class="main-area"><header class="topbar"><div style="display:flex;align-items:center;gap:12px"><button id="mobile-menu" class="btn secondary mobile-menu" aria-label="Toggle navigation">Menu</button><h1 id="page-title">Dashboard</h1></div><div class="user-tools"><span class="user-name">${escapeHtml(user.username)}</span><span class="role-badge">${escapeHtml(user.role)}</span><button id="logout" class="btn secondary small">Logout</button></div></header><main class="content" id="page-content">${skeleton()}</main></div></div>`;
-  document.querySelector("#logout").onclick = () => { authStore.clear(); location.hash = "#login"; renderRoute(); };
+  document.querySelector("#app").innerHTML = `<div class="app-shell"><aside class="sidebar" id="sidebar"><div class="brand">Retail Inventory<br>&amp; Sales Intelligence</div>${nav}<div class="nav-group">DEVELOPER</div><a class="nav-link" href="/docs" target="_blank" rel="noopener">API Documentation</a></aside><div class="main-area"><header class="topbar"><div style="display:flex;align-items:center;gap:12px"><button id="mobile-menu" class="btn secondary mobile-menu" aria-label="Toggle navigation">Menu</button><h1 id="page-title">Dashboard</h1></div><div class="user-tools"><span class="user-name">${escapeHtml(user.username)}</span><span class="role-badge">${escapeHtml(user.role)}</span><button id="assistant-toggle" class="btn secondary small" type="button" aria-expanded="false">Assistant</button><button id="logout" class="btn secondary small">Logout</button></div></header><main class="content" id="page-content">${skeleton()}</main></div></div>`;
+  mountChatbot(api, user);
+  document.querySelector("#logout").onclick = () => { unmountChatbot(); authStore.clear(); location.hash = "#login"; renderRoute(); };
   document.querySelector("#mobile-menu").onclick = () => document.querySelector("#sidebar").classList.toggle("open");
 }
 

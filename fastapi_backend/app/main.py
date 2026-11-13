@@ -15,7 +15,7 @@ from .config import settings
 from .database import engine
 from .deps import get_current_user
 from .logging_config import configure_logging
-from .routers import auth, labs, operations, resources
+from .routers import auth, chatbot, labs, operations, resources
 from .routers.resources import db_error
 
 configure_logging()
@@ -109,6 +109,7 @@ def database_design(
 
 
 app.include_router(auth.router)
+app.include_router(chatbot.router)
 app.include_router(resources.router)
 app.include_router(operations.router)
 app.include_router(labs.router)

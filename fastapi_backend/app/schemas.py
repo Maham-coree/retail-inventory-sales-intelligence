@@ -2,6 +2,7 @@
 
 from datetime import date
 from decimal import Decimal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -129,3 +130,41 @@ class UserCreate(BaseModel):
 
 class PasswordReset(BaseModel):
     password: str = Field(min_length=8, max_length=72)
+
+
+class ChatbotContext(BaseModel):
+    intent: str | None = Field(default=None, max_length=50)
+    product_id: int | None = Field(default=None, gt=0)
+    product_name: str | None = Field(default=None, max_length=150)
+    store_id: int | None = Field(default=None, gt=0)
+    store_name: str | None = Field(default=None, max_length=100)
+    candidate_product_ids: list[int] = Field(default_factory=list, max_length=5)
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class ChatbotMessageRequest(BaseModel):
+    message: str = Field(min_length=1, max_length=500)
+    context: ChatbotContext = Field(default_factory=ChatbotContext)
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class ChatbotFeedbackRequest(BaseModel):
+    message_id: int = Field(gt=0)
+    helpful: bool
+
+
+class ChatbotData(BaseModel):
+    type: Literal["table", "list"]
+    columns: list[str] | None = None
+    rows: list[dict[str, Any]] = Field(default_factory=list, max_length=10)
+
+
+class ChatbotMessageResponse(BaseModel):
+    reply: str
+    intent: str
+    data: ChatbotData | None = None
+    suggestions: list[str] = Field(default_factory=list, max_length=5)
+    context: ChatbotContext
+    message_id: int
